@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/label_detect.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mlkit/mlkit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +17,7 @@ Future<void> main() async {
 class SplashPage extends StatelessWidget {
   int duration = 0;
   Widget goToPage;
-  SplashPage({required this.goToPage, required this.duration});
+  SplashPage({this.goToPage,  this.duration});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +42,11 @@ class SplashPage extends StatelessWidget {
 enum ImageSourceType { gallery, camera }
 
 class HomePage extends StatelessWidget {
+  FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
   void _handleURLButtonPress(BuildContext context, var type) {
+    final imagePicker = ImagePicker();
+    XFile file;
+    File useFile;
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => ImageFromGalleryEx(type)));
   }
@@ -98,17 +106,23 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
   var _image;
   var imagePicker;
   var type;
+  
 
   ImageFromGalleryExState(this.type);
 
   @override
   void initState() {
     super.initState();
-    imagePicker = new ImagePicker();
+    imagePicker = ImagePicker();
   }
 
   @override
   Widget build(BuildContext context) {
+    FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
+    List<VisionLabel> _currentLabels = <VisionLabel>[];
+    var   sharedPreferences =  SharedPreferences.getInstance();
+    List labels;
+    String answer;
     return Scaffold(
       appBar: AppBar(
           title: Text(type == ImageSourceType.camera
@@ -127,37 +141,67 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                     : ImageSource.gallery;
                 XFile image = await imagePicker.pickImage(
                     source: source,
-                    imageQuality: 50,
-                    preferredCameraDevice: CameraDevice.front);
-                setState(() {
+                    imageQuality: 100,
+                    );
+                setState(()  {
                   _image = File(image.path);
+               
+                 
+                });
+                try{
+                   var labels = labelDetector.detectFromPath(image.path);
+                }catch(e){
+                  print(e);
+                }
+                setState(() {
+                  _currentLabels = labels;
+                
                 });
               },
               child: Container(
                 width: 200,
                 height: 200,
                 decoration: BoxDecoration(color: Colors.red[200]),
-                child: _image != null
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [_image != null
                     ? Image.file(
                         _image,
                         width: 200.0,
-                        height: 200.0,
-                        fit: BoxFit.fitHeight,
+                        height: 100.0,
+                        fit: BoxFit.fitWidth
                       )
                     : Container(
                         decoration: BoxDecoration(color: Colors.red[200]),
                         width: 200,
-                        height: 200,
+                        height: 100,
                         child: Icon(
                           Icons.camera_alt,
                           color: Colors.grey[800],
                         ),
+                        
                       ),
+                      
+                      ElevatedButton(onPressed: () async{
+                        
+                      
+                     Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => LabelImageWidget()));
+                      
+                      
+                         
+                      }, child: Text('Detect')),
+                      Text(answer ?? 'detecting')])
               ),
             ),
           )
         ],
       ),
     );
+    
+
   }
+  
+
+ 
 }
