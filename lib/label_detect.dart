@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mlkit/mlkit.dart';
 
 class LabelImageWidget extends StatefulWidget {
   String image_path;
-  LabelImageWidget({this.image_path});
+  var labels;
+  LabelImageWidget({this.image_path, this.labels});
   @override
   State<StatefulWidget> createState() {
     return LabelImageWidgetState();
@@ -19,6 +20,7 @@ class LabelImageWidget extends StatefulWidget {
 
 class LabelImageWidgetState extends State<LabelImageWidget> {
   String image_path;
+  var labels;
   ImagePicker imagePicker = ImagePicker();
   File _file;
   List<VisionLabel> _currentLabels = <VisionLabel>[];
@@ -33,6 +35,8 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
   @override
   Widget build(BuildContext context) {
     image_path = widget.image_path;
+    labels = widget.labels;
+    _currentLabels = labels;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -98,18 +102,47 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
 
   Widget _buildList(List<VisionLabel> labels) {
     if (labels.length == 0) {
-      return Text('Empty');
+      return Text('No results found !',
+          style: TextStyle(color: Colors.white, fontSize: 20));
     }
     return Expanded(
-      child: Container(
-        child: ListView.builder(
-            padding: const EdgeInsets.all(1.0),
-            itemCount: labels.length,
-            itemBuilder: (context, i) {
-              return _buildRow(labels[i].label, labels[i].confidence);
-            }),
+      child: GestureDetector(
+        child: Container(
+          padding: EdgeInsets.only(bottom: 20),
+          child: ListView.builder(
+              itemCount: labels.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  leading: Text(
+                    "${index + 1}.",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                  title: Text(
+                    labels[index].label,
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                  subtitle: Text(
+                    (100 * labels[index].confidence).toStringAsFixed(2) +
+                        '% match',
+                    style: TextStyle(color: Colors.white, fontSize: 15),
+                  ),
+                  onTap: () {
+                    _launchUrl(labels[index].label);
+                  },
+                );
+              }),
+        ),
       ),
     );
+  }
+
+  _launchUrl(keyword) async {
+    var _url = 'https://google.com/search?q=${keyword}';
+    if (await canLaunch(_url)) {
+      await launch(_url,
+          forceSafariVC: true, forceWebView: true, enableJavaScript: true);
+    } else
+      throw 'Could not launch $_url';
   }
 
   Widget _buildRow(String label, double confidence) {

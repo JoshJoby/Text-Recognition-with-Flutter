@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-// import 'package:flutter_application_1/label_detect.dart';
+import 'package:flutter_application_1/label_detect.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mlkit/mlkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,10 +68,11 @@ class HomePage extends StatelessWidget {
           color: Color(0xFF181818),
           child: Padding(
             padding: EdgeInsets.only(
-                top: 50, left: widthScreen / 50, right: widthScreen / 50),
+                top: 0, left: widthScreen / 50, right: widthScreen / 50),
             child: Align(
               alignment: Alignment.topCenter,
-              child: Row(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   MaterialButton(
                     color: Color(0xFF6305dc),
@@ -81,8 +82,8 @@ class HomePage extends StatelessWidget {
                       side: BorderSide(width: 5, color: Color(0xFF212121)),
                     ),
                     padding: EdgeInsets.only(
-                        left: widthScreen / 10,
-                        right: widthScreen / 10,
+                        left: widthScreen / 8,
+                        right: widthScreen / 8,
                         top: 80,
                         bottom: 80),
                     child: Text(
@@ -97,6 +98,7 @@ class HomePage extends StatelessWidget {
                       _handleURLButtonPress(context, ImageSourceType.gallery);
                     },
                   ),
+                  SizedBox(height: 50),
                   MaterialButton(
                     color: Color(0xFF6305dc),
                     shape: RoundedRectangleBorder(
@@ -105,8 +107,8 @@ class HomePage extends StatelessWidget {
                       side: BorderSide(width: 5, color: Color(0xFF212121)),
                     ),
                     padding: EdgeInsets.only(
-                        left: widthScreen / 10,
-                        right: widthScreen / 10,
+                        left: widthScreen / 8,
+                        right: widthScreen / 8,
                         top: 80,
                         bottom: 80),
                     child: Text(
@@ -142,6 +144,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
   var imagePicker;
   var type;
   XFile image;
+  String image_path;
 
   ImageFromGalleryExState(this.type);
 
@@ -174,48 +177,60 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
     String answer;
     return Scaffold(
       appBar: AppBar(
-          title: Text(type == ImageSourceType.camera
-              ? "        Image from Camera"
-              : "        Image from Gallery")),
-      body: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 52,
-          ),
-          Center(
-              child: GestureDetector(
-            onTap: () async {
-              var source = type == ImageSourceType.camera
-                  ? ImageSource.camera
-                  : ImageSource.gallery;
-              image = await imagePicker.pickImage(
-                source: source,
-                imageQuality: 100,
-              );
-              setState(() {
-                _image = File(image.path);
-              });
-            },
-            child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(color: Colors.red[200]),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _image != null
-                          ? Image.file(_image,
-                              width: 200.0, height: 100.0, fit: BoxFit.fitWidth)
-                          : Container(
-                              decoration: BoxDecoration(color: Colors.red[200]),
-                              width: 200,
-                              height: 100,
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Colors.grey[800],
+        backgroundColor: Color(0xFF6305dc),
+        title: Text(
+            type == ImageSourceType.camera
+                ? "Image from Camera"
+                : "Image from Gallery",
+            style: TextStyle(fontFamily: 'Gilroy')),
+        centerTitle: true,
+      ),
+      body: Container(
+        color: Color(0xFF181818),
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 80,
+            ),
+            Center(
+                child: GestureDetector(
+              onTap: () async {
+                var source = type == ImageSourceType.camera
+                    ? ImageSource.camera
+                    : ImageSource.gallery;
+                image = await imagePicker.pickImage(
+                  source: source,
+                  imageQuality: 100,
+                );
+                setState(() {
+                  _image = File(image.path);
+                  image_path = image.path;
+                });
+              },
+              child: Container(
+                  width: 200,
+                  height: 300,
+                  decoration: BoxDecoration(color: Color(0xFF181818)),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _image != null
+                            ? Image.file(_image,
+                                width: 200.0,
+                                height: 200.0,
+                                fit: BoxFit.fitWidth)
+                            : Container(
+                                decoration:
+                                    BoxDecoration(color: Color(0xFF6305dc)),
+                                width: 200,
+                                height: 200,
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                      ElevatedButton(
+                        MaterialButton(
+                          color: Color(0xFF6305dc),
                           onPressed: () async {
                             try {
                               labels = await labelDetector
@@ -226,15 +241,29 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                             setState(() {
                               _currentLabels = labels;
                             });
-                            print('this is label ${labels[0].label}');
+                            _showToast(context, image_path);
+                            if (image_path != null) {
+                              Future.delayed(Duration(milliseconds: 1500), () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (_) => LabelImageWidget(
+                                          image_path: image_path,
+                                          labels: labels,
+                                        )));
+                              });
+
+                              print(
+                                  'this is confidence ${labels[0].confidence}');
+                            }
                           },
-                          child: Text('Detect')),
-                      Text(_currentLabels.toString() == null
-                          ? _currentLabels[0].toString()
-                          : 'detecting')
-                    ])),
-          )),
-        ],
+                          child: Text('Detect',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ])),
+            )),
+          ],
+        ),
       ),
     );
   }
