@@ -122,7 +122,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
     FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
     List<VisionLabel> _currentLabels = <VisionLabel>[];
     var   sharedPreferences =  SharedPreferences.getInstance();
-    List labels;
+    var labels;
     String answer;
     return Scaffold(
       appBar: AppBar(
@@ -179,7 +179,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                         
                       
                     try{
-                   var labels = labelDetector.detectFromPath(image.path);
+                    labels =  await labelDetector.detectFromPath(image.path);
                 }catch(e){
                   print(e);
                 }
@@ -187,6 +187,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                   _currentLabels = labels;
                 
                 });
+                print('this is label ${labels[0].label}');
                       
                       
                          
