@@ -17,7 +17,7 @@ Future<void> main() async {
 class SplashPage extends StatelessWidget {
   int duration = 0;
   Widget goToPage;
-  SplashPage({this.goToPage,  this.duration});
+  SplashPage({this.goToPage, this.duration});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class SplashPage extends StatelessWidget {
       child: SafeArea(
         child: Scaffold(
             body: Container(
-                color: Color(0xFF00aff0),
+                color: Color(0xFF181818),
                 child:
                     Center(child: Image.asset('assets/icons8_camera_96.png')))),
       ),
@@ -42,7 +42,8 @@ class SplashPage extends StatelessWidget {
 enum ImageSourceType { gallery, camera }
 
 class HomePage extends StatelessWidget {
-  FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
+  FirebaseVisionLabelDetector labelDetector =
+      FirebaseVisionLabelDetector.instance;
   void _handleURLButtonPress(BuildContext context, var type) {
     final imagePicker = ImagePicker();
     XFile file;
@@ -53,41 +54,75 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var widthScreen = MediaQuery.of(context).size.width;
+    var heightScreen = MediaQuery.of(context).size.height;
     return Scaffold(
         appBar: AppBar(
-          title: Text("                         Image Picker "),
+          title: Text("Image Picker ", style: TextStyle(fontFamily: 'Gilroy')),
+          backgroundColor: Color(0xFF6305dc),
+          centerTitle: true,
         ),
         body: Container(
-          height: 800,
-          width: 505,
-          color: Colors.white,
-          child: Align(
-            alignment: Alignment.bottomLeft,
-            child: Row(
-              children: [
-                MaterialButton(
-                  color: Colors.blue,
-                  child: Text(
-                    "\n            Pick Image\n           from Gallery              \n",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+          height: heightScreen,
+          width: widthScreen,
+          color: Color(0xFF181818),
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: 50, left: widthScreen / 50, right: widthScreen / 50),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Row(
+                children: [
+                  MaterialButton(
+                    color: Color(0xFF6305dc),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          80.0), // CHANGE BORDER RADIUS HERE
+                      side: BorderSide(width: 5, color: Color(0xFF212121)),
+                    ),
+                    padding: EdgeInsets.only(
+                        left: widthScreen / 10,
+                        right: widthScreen / 10,
+                        top: 80,
+                        bottom: 80),
+                    child: Text(
+                      "Pick Image\nfrom Gallery",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Gilroy',
+                          fontSize: 18.25),
+                    ),
+                    onPressed: () {
+                      _handleURLButtonPress(context, ImageSourceType.gallery);
+                    },
                   ),
-                  onPressed: () {
-                    _handleURLButtonPress(context, ImageSourceType.gallery);
-                  },
-                ),
-                MaterialButton(
-                  color: Colors.blue,
-                  child: Text(
-                    "\n            Pick Image\n           from Camera            \n",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                  MaterialButton(
+                    color: Color(0xFF6305dc),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          80.0), // CHANGE BORDER RADIUS HERE
+                      side: BorderSide(width: 5, color: Color(0xFF212121)),
+                    ),
+                    padding: EdgeInsets.only(
+                        left: widthScreen / 10,
+                        right: widthScreen / 10,
+                        top: 80,
+                        bottom: 80),
+                    child: Text(
+                      "Pick Image\nfrom Camera",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Gilroy',
+                          fontSize: 18),
+                    ),
+                    onPressed: () {
+                      _handleURLButtonPress(context, ImageSourceType.camera);
+                    },
                   ),
-                  onPressed: () {
-                    _handleURLButtonPress(context, ImageSourceType.camera);
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ));
@@ -106,9 +141,22 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
   var _image;
   var imagePicker;
   var type;
-  
+  String image_path;
 
   ImageFromGalleryExState(this.type);
+
+  void _showToast(BuildContext context, String image_path) {
+    final scaffold = ScaffoldMessenger.of(context);
+    String snackText =
+        (image_path != null) ? 'Detecting...' : 'Invalid image !';
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(snackText),
+        action:
+            SnackBarAction(label: '', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -118,90 +166,97 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
+    FirebaseVisionLabelDetector labelDetector =
+        FirebaseVisionLabelDetector.instance;
     List<VisionLabel> _currentLabels = <VisionLabel>[];
-    var   sharedPreferences =  SharedPreferences.getInstance();
+    var sharedPreferences = SharedPreferences.getInstance();
     List labels;
     String answer;
     return Scaffold(
       appBar: AppBar(
-          title: Text(type == ImageSourceType.camera
-              ? "        Image from Camera"
-              : "        Image from Gallery")),
-      body: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 52,
-          ),
-          Center(
-            child: GestureDetector(
-              onTap: () async {
-                var source = type == ImageSourceType.camera
-                    ? ImageSource.camera
-                    : ImageSource.gallery;
-                XFile image = await imagePicker.pickImage(
+        backgroundColor: Color(0xFF6305dc),
+        title: Text(type == ImageSourceType.camera
+            ? "Image from Camera"
+            : "Image from Gallery"),
+        centerTitle: true,
+      ),
+      body: Container(
+        color: Color(0xFF181818),
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 80,
+            ),
+            Center(
+              child: GestureDetector(
+                onTap: () async {
+                  var source = type == ImageSourceType.camera
+                      ? ImageSource.camera
+                      : ImageSource.gallery;
+                  XFile image = await imagePicker.pickImage(
                     source: source,
                     imageQuality: 100,
-                    );
-                setState(()  {
-                  _image = File(image.path);
-               
-                 
-                });
-                try{
-                   var labels = labelDetector.detectFromPath(image.path);
-                }catch(e){
-                  print(e);
-                }
-                setState(() {
-                  _currentLabels = labels;
-                
-                });
-              },
-              child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(color: Colors.red[200]),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [_image != null
-                    ? Image.file(
-                        _image,
-                        width: 200.0,
-                        height: 100.0,
-                        fit: BoxFit.fitWidth
-                      )
-                    : Container(
-                        decoration: BoxDecoration(color: Colors.red[200]),
-                        width: 200,
-                        height: 100,
-                        child: Icon(
-                          Icons.camera_alt,
-                          color: Colors.grey[800],
-                        ),
-                        
-                      ),
-                      
-                      ElevatedButton(onPressed: () async{
-                        
-                      
-                     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => LabelImageWidget()));
-                      
-                      
-                         
-                      }, child: Text('Detect')),
-                      Text(answer ?? 'detecting')])
+                  );
+
+                  setState(() {
+                    image_path = image.path;
+                    _image = File(image.path);
+                  });
+                  try {
+                    var labels = labelDetector.detectFromPath(image.path);
+                  } catch (e) {
+                    print(e);
+                  }
+                  setState(() {
+                    _currentLabels = labels;
+                  });
+                },
+                child: Container(
+                    width: 200,
+                    height: 300,
+                    // color: Colors.white10,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _image != null
+                              ? Image.file(_image,
+                                  width: 200.0,
+                                  height: 200.0,
+                                  fit: BoxFit.fitWidth)
+                              : Container(
+                                  decoration:
+                                      BoxDecoration(color: Color(0xFF6305dc)),
+                                  width: 200,
+                                  height: 200,
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                          MaterialButton(
+                            color: Color(0xFF6305dc),
+                            onPressed: () async {
+                              _showToast(context, image_path);
+                              if (image_path != null) {
+                                Future.delayed(Duration(milliseconds: 1500),
+                                    () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (_) => LabelImageWidget(
+                                          image_path: image_path)));
+                                });
+                              }
+                            },
+                            child: Text('Detect',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                          )
+                        ])),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
-    
-
   }
-  
-
- 
 }

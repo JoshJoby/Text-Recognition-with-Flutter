@@ -6,11 +6,19 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mlkit/mlkit.dart';
 
 class LabelImageWidget extends StatefulWidget {
+  String image_path;
+  LabelImageWidget({this.image_path});
   @override
-  _LabelImageWidgetState createState() => _LabelImageWidgetState();
+  State<StatefulWidget> createState() {
+    return LabelImageWidgetState();
+  }
+
+  // @override
+  // LabelImageWidgetState createState() => LabelImageWidgetState();
 }
 
-class _LabelImageWidgetState extends State<LabelImageWidget> {
+class LabelImageWidgetState extends State<LabelImageWidget> {
+  String image_path;
   ImagePicker imagePicker = ImagePicker();
   File _file;
   List<VisionLabel> _currentLabels = <VisionLabel>[];
@@ -24,51 +32,29 @@ class _LabelImageWidgetState extends State<LabelImageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    image_path = widget.image_path;
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('label image'),
+          backgroundColor: Color(0xFF6305dc),
+          title: Text('Results'),
+          centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
+            icon: Icon(Icons.arrow_back),
             tooltip: 'Back',
             onPressed: () {
               Navigator.pop(context);
             },
           ),
         ),
-        body: _buildBody(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            try {
-              //var file = await ImagePicker.pickImage(source: ImageSource.camera);
-              var file ;
-              file =
-                  await imagePicker.pickImage(source: ImageSource.camera);
-              if (file != null) {
-                setState(() {
-                  _file = file;
-                });
-                try {
-                  var currentLabels =
-                      await detector.detectFromPath(_file?.path);
-                  setState(() {
-                    _currentLabels = currentLabels;
-                  });
-                } catch (e) {
-                  print(e.toString());
-                }
-              }
-            } catch (e) {
-              print(e.toString());
-            }
-          },
-          child: Icon(Icons.camera),
-        ),
+        body: Container(color: Color(0xFF181818), child: _buildBody()),
       ),
     );
   }
 
   Widget _buildImage() {
+    _file = File(widget.image_path);
     return SizedBox(
       height: 350.0,
       child: Center(
@@ -78,6 +64,8 @@ class _LabelImageWidgetState extends State<LabelImageWidget> {
                 future: _getImageSize(Image.file(_file, fit: BoxFit.fitWidth)),
                 builder: (BuildContext context, AsyncSnapshot<Size> snapshot) {
                   if (snapshot.hasData) {
+                    // var currentLabel = detector.detectFromPath(image_path);
+                    // print(currentLabel);
                     return Container(
                         child: Image.file(_file, fit: BoxFit.fitWidth));
                   } else {
@@ -129,6 +117,7 @@ class _LabelImageWidgetState extends State<LabelImageWidget> {
       title: Text(
         "${label}:${confidence}",
       ),
+      textColor: Colors.white,
       dense: true,
     );
   }
