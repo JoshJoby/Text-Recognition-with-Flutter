@@ -106,6 +106,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
   var _image;
   var imagePicker;
   var type;
+  XFile image;
   
 
   ImageFromGalleryExState(this.type);
@@ -139,7 +140,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                 var source = type == ImageSourceType.camera
                     ? ImageSource.camera
                     : ImageSource.gallery;
-                XFile image = await imagePicker.pickImage(
+                 image = await imagePicker.pickImage(
                     source: source,
                     imageQuality: 100,
                     );
@@ -148,15 +149,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                
                  
                 });
-                try{
-                   var labels = labelDetector.detectFromPath(image.path);
-                }catch(e){
-                  print(e);
-                }
-                setState(() {
-                  _currentLabels = labels;
                 
-                });
               },
               child: Container(
                 width: 200,
@@ -185,13 +178,20 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                       ElevatedButton(onPressed: () async{
                         
                       
-                     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => LabelImageWidget()));
+                    try{
+                   var labels = labelDetector.detectFromPath(image.path);
+                }catch(e){
+                  print(e);
+                }
+                setState(() {
+                  _currentLabels = labels;
+                
+                });
                       
                       
                          
                       }, child: Text('Detect')),
-                      Text(answer ?? 'detecting')])
+                      Text(_currentLabels.toString() ==  null ? _currentLabels[0].toString():'detecting')])
               ),
             ),
           )
