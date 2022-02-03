@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/label_detect.dart';
+// import 'package:flutter_application_1/label_detect.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mlkit/mlkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -141,7 +141,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
   var _image;
   var imagePicker;
   var type;
-  String image_path;
+  XFile image;
 
   ImageFromGalleryExState(this.type);
 
@@ -170,92 +170,71 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
         FirebaseVisionLabelDetector.instance;
     List<VisionLabel> _currentLabels = <VisionLabel>[];
     var sharedPreferences = SharedPreferences.getInstance();
-    List labels;
+    var labels;
     String answer;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF6305dc),
-        title: Text(type == ImageSourceType.camera
-            ? "Image from Camera"
-            : "Image from Gallery"),
-        centerTitle: true,
-      ),
-      body: Container(
-        color: Color(0xFF181818),
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 80,
-            ),
-            Center(
+          title: Text(type == ImageSourceType.camera
+              ? "        Image from Camera"
+              : "        Image from Gallery")),
+      body: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 52,
+          ),
+          Center(
               child: GestureDetector(
-                onTap: () async {
-                  var source = type == ImageSourceType.camera
-                      ? ImageSource.camera
-                      : ImageSource.gallery;
-                  XFile image = await imagePicker.pickImage(
-                    source: source,
-                    imageQuality: 100,
-                  );
-
-                  setState(() {
-                    image_path = image.path;
-                    _image = File(image.path);
-                  });
-                  try {
-                    var labels = labelDetector.detectFromPath(image.path);
-                  } catch (e) {
-                    print(e);
-                  }
-                  setState(() {
-                    _currentLabels = labels;
-                  });
-                },
-                child: Container(
-                    width: 200,
-                    height: 300,
-                    // color: Colors.white10,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _image != null
-                              ? Image.file(_image,
-                                  width: 200.0,
-                                  height: 200.0,
-                                  fit: BoxFit.fitWidth)
-                              : Container(
-                                  decoration:
-                                      BoxDecoration(color: Color(0xFF6305dc)),
-                                  width: 200,
-                                  height: 200,
-                                  child: Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                          MaterialButton(
-                            color: Color(0xFF6305dc),
-                            onPressed: () async {
-                              _showToast(context, image_path);
-                              if (image_path != null) {
-                                Future.delayed(Duration(milliseconds: 1500),
-                                    () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => LabelImageWidget(
-                                          image_path: image_path)));
-                                });
-                              }
-                            },
-                            child: Text('Detect',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
-                          )
-                        ])),
-              ),
-            )
-          ],
-        ),
+            onTap: () async {
+              var source = type == ImageSourceType.camera
+                  ? ImageSource.camera
+                  : ImageSource.gallery;
+              image = await imagePicker.pickImage(
+                source: source,
+                imageQuality: 100,
+              );
+              setState(() {
+                _image = File(image.path);
+              });
+            },
+            child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(color: Colors.red[200]),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _image != null
+                          ? Image.file(_image,
+                              width: 200.0, height: 100.0, fit: BoxFit.fitWidth)
+                          : Container(
+                              decoration: BoxDecoration(color: Colors.red[200]),
+                              width: 200,
+                              height: 100,
+                              child: Icon(
+                                Icons.camera_alt,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                      ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              labels = await labelDetector
+                                  .detectFromPath(image.path);
+                            } catch (e) {
+                              print(e);
+                            }
+                            setState(() {
+                              _currentLabels = labels;
+                            });
+                            print('this is label ${labels[0].label}');
+                          },
+                          child: Text('Detect')),
+                      Text(_currentLabels.toString() == null
+                          ? _currentLabels[0].toString()
+                          : 'detecting')
+                    ])),
+          )),
+        ],
       ),
     );
   }
