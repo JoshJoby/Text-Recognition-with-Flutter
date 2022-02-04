@@ -56,6 +56,16 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var widthScreen = MediaQuery.of(context).size.width;
     var heightScreen = MediaQuery.of(context).size.height;
+    BoxDecoration myBoxDecoration() {
+      return BoxDecoration(
+        border: Border(
+            bottom: BorderSide(
+          color: Color(0xFF505050),
+          width: 1.0,
+        )),
+      );
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: Text("Image Picker ", style: TextStyle(fontFamily: 'Gilroy')),
@@ -84,40 +94,49 @@ class HomePage extends StatelessWidget {
                     padding: EdgeInsets.only(
                         left: widthScreen / 8,
                         right: widthScreen / 8,
-                        top: 80,
-                        bottom: 80),
+                        top: heightScreen / 8,
+                        bottom: heightScreen / 8),
                     child: Text(
                       "Pick Image\nfrom Gallery",
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Gilroy',
-                          fontSize: 18.25),
+                          fontSize: 21),
                     ),
                     onPressed: () {
                       _handleURLButtonPress(context, ImageSourceType.gallery);
                     },
                   ),
-                  SizedBox(height: 50),
+                  Container(
+                    child: SizedBox(width: widthScreen / 2, height: 25),
+                    decoration: myBoxDecoration(),
+                  ),
+                  Container(
+                    child: SizedBox(width: 50, height: 25),
+                  ),
                   MaterialButton(
                     color: Color(0xFF6305dc),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
                           80.0), // CHANGE BORDER RADIUS HERE
-                      side: BorderSide(width: 5, color: Color(0xFF212121)),
+                      side: BorderSide(
+                        width: 5,
+                        color: Color(0xFF212121),
+                      ),
                     ),
                     padding: EdgeInsets.only(
                         left: widthScreen / 8,
                         right: widthScreen / 8,
-                        top: 80,
-                        bottom: 80),
+                        top: heightScreen / 8,
+                        bottom: heightScreen / 8),
                     child: Text(
                       "Pick Image\nfrom Camera",
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Gilroy',
-                          fontSize: 18),
+                          fontSize: 20.75),
                     ),
                     onPressed: () {
                       _handleURLButtonPress(context, ImageSourceType.camera);
@@ -169,6 +188,8 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
 
   @override
   Widget build(BuildContext context) {
+    var widthScreen = MediaQuery.of(context).size.width;
+    var heightScreen = MediaQuery.of(context).size.height;
     FirebaseVisionLabelDetector labelDetector =
         FirebaseVisionLabelDetector.instance;
     List<VisionLabel> _currentLabels = <VisionLabel>[];
@@ -208,57 +229,68 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                 });
               },
               child: Container(
-                  width: 200,
-                  height: 300,
-                  decoration: BoxDecoration(color: Color(0xFF181818)),
+                  width: widthScreen,
+                  height: heightScreen / 2,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF181818),
+                  ),
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _image != null
                             ? Image.file(_image,
-                                width: 200.0,
-                                height: 200.0,
+                                width: 300.0,
+                                height: 300.0,
                                 fit: BoxFit.fitWidth)
                             : Container(
-                                decoration:
-                                    BoxDecoration(color: Color(0xFF6305dc)),
-                                width: 200,
-                                height: 200,
+                                decoration: BoxDecoration(
+                                    color: Color(0xFF6305dc),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(300))),
+                                width: 300,
+                                height: 300,
                                 child: Icon(
                                   Icons.camera_alt,
                                   color: Colors.white,
                                 ),
                               ),
-                        MaterialButton(
-                          color: Color(0xFF6305dc),
-                          onPressed: () async {
-                            try {
-                              labels = await labelDetector
-                                  .detectFromPath(image.path);
-                            } catch (e) {
-                              print(e);
-                            }
-                            setState(() {
-                              _currentLabels = labels;
-                            });
-                            _showToast(context, image_path);
-                            if (image_path != null) {
-                              Future.delayed(Duration(milliseconds: 1500), () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => LabelImageWidget(
-                                          image_path: image_path,
-                                          labels: labels,
-                                        )));
+                        GestureDetector(
+                          child: MaterialButton(
+                            color: Color(0xFF6305dc),
+                            onPressed: () async {
+                              try {
+                                labels = await labelDetector
+                                    .detectFromPath(image.path);
+                              } catch (e) {
+                                print(e);
+                              }
+                              setState(() {
+                                _currentLabels = labels;
                               });
+                              _showToast(context, image_path);
+                              if (image_path != null) {
+                                Future.delayed(Duration(milliseconds: 1500),
+                                    () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (_) => LabelImageWidget(
+                                            image_path: image_path,
+                                            labels: labels,
+                                          )));
+                                });
 
-                              print(
-                                  'this is confidence ${labels[0].confidence}');
-                            }
-                          },
-                          child: Text('Detect',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
+                                print(
+                                    'this is confidence ${labels[0].confidence}');
+                              }
+                            },
+                            padding: EdgeInsets.only(
+                                left: 30, right: 30, top: 20, bottom: 20),
+                            child: Text('Scan image',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: 'Gilroy',
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w200)),
+                          ),
                         ),
                       ])),
             )),

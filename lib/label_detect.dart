@@ -42,7 +42,10 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xFF6305dc),
-          title: Text('Results'),
+          title: Text(
+            'Results',
+            style: TextStyle(fontFamily: 'Gilroy'),
+          ),
           centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
@@ -91,6 +94,7 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
 
   Widget _buildBody() {
     return Container(
+      padding: EdgeInsets.only(top: 20),
       child: Column(
         children: <Widget>[
           _buildImage(),
@@ -106,31 +110,36 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
           style: TextStyle(color: Colors.white, fontSize: 20));
     }
     return Expanded(
-      child: GestureDetector(
-        child: Container(
-          padding: EdgeInsets.only(bottom: 20),
-          child: ListView.builder(
-              itemCount: labels.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: Text(
-                    "${index + 1}.",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  title: Text(
-                    labels[index].label,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  subtitle: Text(
-                    (100 * labels[index].confidence).toStringAsFixed(2) +
-                        '% match',
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  ),
-                  onTap: () {
-                    _launchUrl(labels[index].label);
-                  },
-                );
-              }),
+      child: Container(
+        padding: EdgeInsets.only(top: 20, bottom: 20),
+        child: ListView.builder(
+          itemCount: labels.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              color: Colors.black,
+              child: ListTile(
+                leading: Text(
+                  "${index + 1}.",
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 20, fontFamily: 'Gilroy'),
+                ),
+                title: Text(
+                  labels[index].label,
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 20, fontFamily: 'Gilroy'),
+                ),
+                subtitle: Text(
+                  (100 * labels[index].confidence).toStringAsFixed(2) +
+                      '% match',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 15, fontFamily: 'Gilroy'),
+                ),
+                onTap: () {
+                  _launchUrl(labels[index].label);
+                },
+              ),
+            );
+          },
         ),
       ),
     );
