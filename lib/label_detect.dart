@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,6 +22,7 @@ class LabelImageWidget extends StatefulWidget {
 
 class LabelImageWidgetState extends State<LabelImageWidget> {
   String image_path;
+
   var labels;
   ImagePicker imagePicker = ImagePicker();
   File _file;
@@ -40,6 +43,7 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           backgroundColor: Color(0xFF6305dc),
           title: Text(
@@ -63,7 +67,7 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
   Widget _buildImage() {
     _file = File(widget.image_path);
     return SizedBox(
-      height: 350.0,
+      height: 325.0,
       child: Center(
         child: _file == null
             ? Text('No Image')
@@ -104,8 +108,12 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
     );
   }
 
-  Widget _buildList(List<VisionLabel> labels) {
-    if (labels.length == 0) {
+  Widget _buildList(List<VisionLabel> labels1) {
+    List labels = List.filled(2, []);
+    labels[0] = labels1;
+    labels[1] = _buildTextForm();
+    print(labels[0].length);
+    if (labels[0].length == 0) {
       return Text('No results found !',
           style: TextStyle(color: Colors.white, fontSize: 20));
     }
@@ -113,31 +121,39 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
       child: Container(
         padding: EdgeInsets.only(top: 20, bottom: 20),
         child: ListView.builder(
-          itemCount: labels.length,
+          itemCount: labels[0].length + 1,
           itemBuilder: (BuildContext context, int index) {
             return Card(
               color: Colors.black,
-              child: ListTile(
-                leading: Text(
-                  "${index + 1}.",
-                  style: TextStyle(
-                      color: Colors.white, fontSize: 20, fontFamily: 'Gilroy'),
-                ),
-                title: Text(
-                  labels[index].label,
-                  style: TextStyle(
-                      color: Colors.white, fontSize: 20, fontFamily: 'Gilroy'),
-                ),
-                subtitle: Text(
-                  (100 * labels[index].confidence).toStringAsFixed(2) +
-                      '% match',
-                  style: TextStyle(
-                      color: Colors.white, fontSize: 15, fontFamily: 'Gilroy'),
-                ),
-                onTap: () {
-                  _launchUrl(labels[index].label);
-                },
-              ),
+              child: (index < labels[0].length)
+                  ? ListTile(
+                      leading: Text(
+                        "${index + 1}.",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontFamily: 'Gilroy'),
+                      ),
+                      title: Text(
+                        labels[0][index].label,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontFamily: 'Gilroy'),
+                      ),
+                      subtitle: Text(
+                        (100 * labels[0][index].confidence).toStringAsFixed(2) +
+                            '% match',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontFamily: 'Gilroy'),
+                      ),
+                      onTap: () {
+                        _launchUrl(labels[0][index].label);
+                      },
+                    )
+                  : Container(child: labels[1]),
             );
           },
         ),
@@ -146,12 +162,11 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
   }
 
   _launchUrl(keyword) async {
-    var _url = 'https://google.com/search?q=${keyword}';
-    if (await canLaunch(_url)) {
-      await launch(_url,
-          forceSafariVC: true, forceWebView: true, enableJavaScript: true);
+    var url = 'https://google.com/search?q=${keyword}';
+    if (await canLaunch(url)) {
+      await launch(url, forceWebView: true, enableJavaScript: true);
     } else
-      throw 'Could not launch $_url';
+      throw 'Could not launch $url';
   }
 
   Widget _buildRow(String label, double confidence) {
@@ -161,6 +176,35 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
       ),
       textColor: Colors.white,
       dense: true,
+    );
+  }
+
+  Widget _buildTextForm() {
+    TextEditingController _queryController = TextEditingController();
+    return Column(
+      children: [
+        TextField(
+          controller: _queryController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            hintText: "Type here for additional keywords!",
+            hintMaxLines: 1,
+          ),
+        ),
+        MaterialButton(
+            color: Color(0xFF6305dc),
+            child: Text("Enter",
+                style: new TextStyle(
+                    fontSize: 16.0, color: Colors.white, fontFamily: 'Gilroy')),
+            onPressed: () {
+              _launchUrl(_queryController.text +
+                  ' ' +
+                  labels[0].label.toLowerCase() +
+                  ' ' +
+                  (labels.length > 1 ? labels[1].label.toLowerCase() : ''));
+            })
+      ],
     );
   }
 }
