@@ -238,13 +238,21 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _image != null
-                            ? Image.file(_image,
-                                width: 300.0,
-                                height: 300.0,
-                                fit: BoxFit.fitWidth)
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 3, color: Color(0xFF212121)),
+                                ),
+                                child: Image.file(_image,
+                                    width: 300.0,
+                                    height: 300.0,
+                                    fit: BoxFit.fitWidth),
+                              )
                             : Container(
                                 decoration: BoxDecoration(
                                     color: Color(0xFF6305dc),
+                                    border: Border.all(
+                                        width: 5, color: Color(0xFF212121)),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(300))),
                                 width: 300,
@@ -256,6 +264,13 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                               ),
                         GestureDetector(
                           child: MaterialButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(80.0),
+                              side: BorderSide(
+                                width: 3,
+                                color: Color(0xFF212121),
+                              ),
+                            ),
                             color: Color(0xFF6305dc),
                             onPressed: () async {
                               try {
@@ -284,7 +299,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                             },
                             padding: EdgeInsets.only(
                                 left: 30, right: 30, top: 20, bottom: 20),
-                            child: Text('Scan image',
+                            child: Text(' Scan image ',
                                 style: TextStyle(
                                     fontSize: 15,
                                     fontFamily: 'Gilroy',

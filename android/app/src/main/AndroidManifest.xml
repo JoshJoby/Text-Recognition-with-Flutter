@@ -7,7 +7,7 @@
         </intent>
     </queries>
    <application
-        android:label="flutter_application_1"
+        android:label="Image Scanner"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

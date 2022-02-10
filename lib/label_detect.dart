@@ -192,7 +192,18 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
             hintMaxLines: 1,
           ),
         ),
+        SizedBox(
+          height: 10,
+        ),
         MaterialButton(
+            padding: EdgeInsets.only(left: 45, right: 45, top: 20, bottom: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(60.0),
+              side: BorderSide(
+                width: 3,
+                color: Color(0xFF212121),
+              ),
+            ),
             color: Color(0xFF6305dc),
             child: Text("Enter",
                 style: new TextStyle(
@@ -203,7 +214,8 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
                   labels[0].label.toLowerCase() +
                   ' ' +
                   (labels.length > 1 ? labels[1].label.toLowerCase() : ''));
-            })
+            }),
+        SizedBox(height: 10)
       ],
     );
   }
