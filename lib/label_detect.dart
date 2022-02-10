@@ -193,7 +193,7 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
           ),
         ),
         SizedBox(
-          height: 10,
+          height: 15,
         ),
         MaterialButton(
             padding: EdgeInsets.only(left: 45, right: 45, top: 20, bottom: 20),
@@ -205,9 +205,9 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
               ),
             ),
             color: Color(0xFF6305dc),
-            child: Text("Enter",
+            child: Text("Google Search",
                 style: new TextStyle(
-                    fontSize: 16.0, color: Colors.white, fontFamily: 'Gilroy')),
+                    fontSize: 17.0, color: Colors.white, fontFamily: 'Gilroy')),
             onPressed: () {
               _launchUrl(_queryController.text +
                   ' ' +
@@ -215,7 +215,7 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
                   ' ' +
                   (labels.length > 1 ? labels[1].label.toLowerCase() : ''));
             }),
-        SizedBox(height: 10)
+        SizedBox(height: 15)
       ],
     );
   }
