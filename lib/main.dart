@@ -9,13 +9,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashPage(duration: 4, goToPage: HomePage())));
 }
 
 class SplashPage extends StatelessWidget {
+  static int numOfVisits = 0;
   int duration = 0;
   Widget goToPage;
   SplashPage({this.goToPage, this.duration});
@@ -57,6 +57,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var widthScreen = MediaQuery.of(context).size.width;
     var heightScreen = MediaQuery.of(context).size.height;
+
     BoxDecoration myBoxDecoration() {
       return BoxDecoration(
         border: Border(
@@ -68,88 +69,89 @@ class HomePage extends StatelessWidget {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Image Picker ", style: TextStyle(fontFamily: 'Gilroy')),
-          backgroundColor: Color(0xFF6305dc),
-          centerTitle: true,
-        ),
-        body: Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: new AssetImage("gifFinal.gif"), fit: BoxFit.cover)),
-          height: heightScreen,
-          width: widthScreen,
-          // color: Color(0xFF181818),
-          child: Padding(
-            padding: EdgeInsets.only(
-                top: 0, left: widthScreen / 50, right: widthScreen / 50),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MaterialButton(
-                    color: Color(0xFF6305dc),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          80.0), // CHANGE BORDER RADIUS HERE
-                      side: BorderSide(width: 5, color: Color(0xFF212121)),
-                    ),
-                    padding: EdgeInsets.only(
-                        left: widthScreen / 8,
-                        right: widthScreen / 8,
-                        top: heightScreen / 8,
-                        bottom: heightScreen / 8),
-                    child: Text(
-                      "Pick Image\nfrom Gallery",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Gilroy',
-                          fontSize: 21),
-                    ),
-                    onPressed: () {
-                      _handleURLButtonPress(context, ImageSourceType.gallery);
-                    },
+      body: Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: new AssetImage("gifFinal.gif"), fit: BoxFit.cover)),
+        height: heightScreen,
+        width: widthScreen,
+        // color: Color(0xFF181818),
+        child: Padding(
+          padding: EdgeInsets.only(
+              top: 0, left: widthScreen / 50, right: widthScreen / 50),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MaterialButton(
+                  color: Color(0xFF6305dc),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        80.0), // CHANGE BORDER RADIUS HERE
+                    side: BorderSide(width: 5, color: Color(0xFF212121)),
                   ),
-                  Container(
-                    child: SizedBox(width: widthScreen / 2, height: 25),
-                    decoration: myBoxDecoration(),
+                  padding: EdgeInsets.only(
+                      left: widthScreen / 8,
+                      right: widthScreen / 8,
+                      top: heightScreen / 8,
+                      bottom: heightScreen / 8),
+                  child: Text(
+                    "Pick Image\nfrom Gallery",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Gilroy',
+                        fontSize: 21),
                   ),
-                  Container(
-                    child: SizedBox(width: 50, height: 25),
-                  ),
-                  MaterialButton(
-                    color: Color(0xFF6305dc),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          80.0), // CHANGE BORDER RADIUS HERE
-                      side: BorderSide(
-                        width: 5,
-                        color: Color(0xFF212121),
-                      ),
+                  onPressed: () {
+                    _handleURLButtonPress(context, ImageSourceType.gallery);
+                  },
+                ),
+                Container(
+                  child: SizedBox(width: widthScreen / 2, height: 25),
+                  decoration: myBoxDecoration(),
+                ),
+                Container(
+                  child: SizedBox(width: 50, height: 25),
+                ),
+                MaterialButton(
+                  color: Color(0xFF6305dc),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        80.0), // CHANGE BORDER RADIUS HERE
+                    side: BorderSide(
+                      width: 5,
+                      color: Color(0xFF212121),
                     ),
-                    padding: EdgeInsets.only(
-                        left: widthScreen / 8,
-                        right: widthScreen / 8,
-                        top: heightScreen / 8,
-                        bottom: heightScreen / 8),
-                    child: Text(
-                      "Pick Image\nfrom Camera",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Gilroy',
-                          fontSize: 20.75),
-                    ),
-                    onPressed: () {
-                      _handleURLButtonPress(context, ImageSourceType.camera);
-                    },
                   ),
-                ],
-              ),
+                  padding: EdgeInsets.only(
+                      left: widthScreen / 8,
+                      right: widthScreen / 8,
+                      top: heightScreen / 8,
+                      bottom: heightScreen / 8),
+                  child: Text(
+                    "Pick Image\nfrom Camera",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Gilroy',
+                        fontSize: 20.75),
+                  ),
+                  onPressed: () {
+                    _handleURLButtonPress(context, ImageSourceType.camera);
+                  },
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+      appBar: AppBar(
+        title: Text("Image Picker ", style: TextStyle(fontFamily: 'Gilroy')),
+        backgroundColor: Color(0xFF6305dc),
+        centerTitle: true,
+      ),
+    );
   }
 }

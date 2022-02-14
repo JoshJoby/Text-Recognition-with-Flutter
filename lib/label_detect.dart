@@ -1,11 +1,10 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'dart:io';
-import 'package:url_launcher/url_launcher.dart';
+import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mlkit/mlkit.dart';
+import 'package:flutter_web_browser/flutter_web_browser.dart';
 
 class LabelImageWidget extends StatefulWidget {
   String image_path;
@@ -157,7 +156,13 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
                             fontFamily: 'Gilroy'),
                       ),
                       onTap: () {
-                        _launchUrl(labels[0][index].label);
+                        var url = 'https://www.amazon.co.in';
+                        if (SplashPage.numOfVisits == 0) {
+                          SplashPage.numOfVisits++;
+                          _launchUrl(url +
+                              '/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.in%2Fs%3Fk%3D${labels[0][index].label}%2B%2B%26adgrpid%3D61682507911%26ext_vrnc%3Dhi%26hvadid%3D398041351197%26hvdev%3Dc%26hvlocphy%3D9299608%26hvnetw%3Dg%26hvqmt%3Db%26hvrand%3D1229409057575211266%26hvtargid%3Dkwd-314793657586%26hydadcr%3D24565_1971419%26tag%3Dgooginhydr1-21%26ref%3Dnav_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=inflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&');
+                        } else
+                          _launchUrl(url + '/s?k=${labels[0][index].label}');
                       },
                     )
                   : Container(child: labels[1]),
@@ -168,12 +173,29 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
     );
   }
 
-  _launchUrl(keyword) async {
-    var url = 'https://google.com/search?q=${keyword}';
-    if (await canLaunch(url)) {
-      await launch(url, forceWebView: true, enableJavaScript: true);
-    } else
-      throw 'Could not launch $url';
+  _launchUrl(url) async {
+    // var url = 'https://www.amazon.co.in/s?k=${keyword}';
+
+    FlutterWebBrowser.openWebPage(
+      url: url,
+      customTabsOptions: CustomTabsOptions(
+        colorScheme: CustomTabsColorScheme.dark,
+        darkColorSchemeParams: CustomTabsColorSchemeParams(
+          toolbarColor: Colors.purple,
+          secondaryToolbarColor: Colors.green,
+          navigationBarColor: Colors.amber,
+          navigationBarDividerColor: Colors.cyan,
+        ),
+        shareState: CustomTabsShareState.on,
+        instantAppsEnabled: true,
+        showTitle: true,
+        urlBarHidingEnabled: true,
+      ),
+    );
+    // if (await canLaunch(url)) {
+    //   await launch(url, forceWebView: true, enableJavaScript: true);
+    // } else
+    //   throw 'Could not launch $url';
   }
 
   Widget _buildRow(String label, double confidence) {
@@ -187,6 +209,7 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
   }
 
   Widget _buildTextForm() {
+    var url = 'https://www.amazon.co.in';
     TextEditingController _queryController = TextEditingController();
     return Column(
       children: [
@@ -212,15 +235,12 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
               ),
             ),
             color: Color(0xFF6305dc),
-            child: Text("Google Search",
+            child: Text("Amazon Search",
                 style: new TextStyle(
                     fontSize: 17.0, color: Colors.white, fontFamily: 'Gilroy')),
             onPressed: () {
-              _launchUrl(_queryController.text +
-                  ' ' +
-                  labels[0].label.toLowerCase() +
-                  ' ' +
-                  (labels.length > 1 ? labels[1].label.toLowerCase() : ''));
+              _launchUrl(url +
+                  '/s?k=${_queryController.text + ' ' + labels[0].label.toLowerCase() + ' ' + (labels.length > 1 ? labels[1].label.toLowerCase() : '')}');
             }),
         SizedBox(height: 15)
       ],
