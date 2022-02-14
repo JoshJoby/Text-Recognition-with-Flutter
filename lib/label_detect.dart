@@ -59,7 +59,12 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
             },
           ),
         ),
-        body: Container(color: Color(0xFF181818), child: _buildBody()),
+        body: Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: new AssetImage("gifFinal.gif"), fit: BoxFit.cover)),
+            // color: Color(0xFF181818),
+            child: _buildBody()),
       ),
     );
   }
@@ -78,6 +83,7 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
                     // var currentLabel = detector.detectFromPath(image_path);
                     // print(currentLabel);
                     return Container(
+                        padding: EdgeInsets.only(bottom: 20),
                         child: Image.file(_file, fit: BoxFit.fitWidth));
                   } else {
                     return Text('Detecting...');
@@ -119,12 +125,13 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
     }
     return Expanded(
       child: Container(
-        padding: EdgeInsets.only(top: 20, bottom: 20),
+        color: Colors.black,
+        // padding: EdgeInsets.only(bottom: 20),
         child: ListView.builder(
           itemCount: labels[0].length + 1,
           itemBuilder: (BuildContext context, int index) {
             return Card(
-              color: Colors.black,
+              color: Color(0xFF212121),
               child: (index < labels[0].length)
                   ? ListTile(
                       leading: Text(
