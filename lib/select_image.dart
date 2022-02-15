@@ -72,7 +72,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
         child: Column(
           children: <Widget>[
             SizedBox(
-              height: 80,
+              height: 222,
             ),
             Center(
                 child: GestureDetector(
@@ -154,8 +154,8 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                                           )));
                                 });
 
-                                print(
-                                    'this is confidence ${labels[0].confidence}');
+                                // print(
+                                //     'this is confidence ${labels[0].confidence}');
                               }
                             },
                             padding: EdgeInsets.only(
