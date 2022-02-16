@@ -7,12 +7,18 @@
         {
             "name": "Mini_Project",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args" : [
+                "--no-sound-null-safety"
+            ]
         },
         {
             "name": "Mini_Project (profile mode)",
             "request": "launch",
             "type": "dart",
+            "args": [
+                "--no-sound-null-safety"
+            ],
             "flutterMode": "profile"
             
         }

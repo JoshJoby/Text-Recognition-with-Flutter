@@ -4,12 +4,12 @@ import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mlkit/mlkit.dart';
-import 'package:flutter_web_browser/flutter_web_browser.dart';
+import 'customBrowser.dart';
 
 class LabelImageWidget extends StatefulWidget {
   String image_path;
   var labels;
-  LabelImageWidget({this.image_path, this.labels});
+  LabelImageWidget({required this.image_path, this.labels});
   @override
   State<StatefulWidget> createState() {
     return LabelImageWidgetState();
@@ -20,11 +20,10 @@ class LabelImageWidget extends StatefulWidget {
 }
 
 class LabelImageWidgetState extends State<LabelImageWidget> {
-  String image_path;
-
+  late String image_path;
   var labels;
   ImagePicker imagePicker = ImagePicker();
-  File _file;
+  late File _file;
   List<VisionLabel> _currentLabels = <VisionLabel>[];
 
   FirebaseVisionLabelDetector detector = FirebaseVisionLabelDetector.instance;
@@ -155,14 +154,32 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
                             fontSize: 15,
                             fontFamily: 'Gilroy'),
                       ),
-                      onTap: () {
-                        var url = 'https://www.amazon.co.in';
-                        if (SplashPage.numOfVisits == 0) {
-                          SplashPage.numOfVisits++;
-                          _launchUrl(url +
-                              '/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.in%2Fs%3Fk%3D${labels[0][index].label}%2B%2B%26adgrpid%3D61682507911%26ext_vrnc%3Dhi%26hvadid%3D398041351197%26hvdev%3Dc%26hvlocphy%3D9299608%26hvnetw%3Dg%26hvqmt%3Db%26hvrand%3D1229409057575211266%26hvtargid%3Dkwd-314793657586%26hydadcr%3D24565_1971419%26tag%3Dgooginhydr1-21%26ref%3Dnav_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=inflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&');
-                        } else
-                          _launchUrl(url + '/s?k=${labels[0][index].label}');
+                      onTap: () async {
+                        var url;
+                        var newQuery = "";
+                        var splitList;
+                        if (labels[0][index].label.contains(" ")) {
+                          splitList = labels[0][index].label.split(' ');
+                          splitList
+                              .forEach((element) => newQuery += element + "+");
+                          newQuery = newQuery.substring(0, newQuery.length - 1);
+                          print(newQuery);
+                        } else {
+                          newQuery = labels[0][index].label;
+                          print("Fail");
+                        }
+                        print(newQuery);
+                        if (SplashPage.isLoggedIn)
+                          url = 'https://www.amazon.in/s?k=${newQuery}';
+                        else {
+                          url =
+                              'https://www.amazon.in/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.in%2Fs%3Fk%3D${newQuery}%2B%2B%26adgrpid%3D61682507911%26ext_vrnc%3Dhi%26hvadid%3D398041351197%26hvdev%3Dc%26hvlocphy%3D9299608%26hvnetw%3Dg%26hvqmt%3Db%26hvrand%3D1229409057575211266%26hvtargid%3Dkwd-314793657586%26hydadcr%3D24565_1971419%26tag%3Dgooginhydr1-21%26ref%3Dnav_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=inflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&';
+                        }
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CustomBrowser(url, newQuery)));
                       },
                     )
                   : Container(child: labels[1]),
@@ -173,29 +190,16 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
     );
   }
 
-  _launchUrl(url) async {
-    // var url = 'https://www.amazon.co.in/s?k=${keyword}';
-
-    FlutterWebBrowser.openWebPage(
-      url: url,
-      customTabsOptions: CustomTabsOptions(
-        colorScheme: CustomTabsColorScheme.dark,
-        darkColorSchemeParams: CustomTabsColorSchemeParams(
-          toolbarColor: Colors.purple,
-          secondaryToolbarColor: Colors.green,
-          navigationBarColor: Colors.amber,
-          navigationBarDividerColor: Colors.cyan,
-        ),
-        shareState: CustomTabsShareState.on,
-        instantAppsEnabled: true,
-        showTitle: true,
-        urlBarHidingEnabled: true,
-      ),
-    );
-    // if (await canLaunch(url)) {
-    //   await launch(url, forceWebView: true, enableJavaScript: true);
-    // } else
-    //   throw 'Could not launch $url';
+  _launchUrl(keyword) async {
+    var url;
+    if (SplashPage.isLoggedIn)
+      url = 'https://www.amazon.in/s?k=${keyword}';
+    else {
+      url =
+          'https://www.amazon.in/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.in%2Fs%3Fk%3D${keyword}%2B%2B%26adgrpid%3D61682507911%26ext_vrnc%3Dhi%26hvadid%3D398041351197%26hvdev%3Dc%26hvlocphy%3D9299608%26hvnetw%3Dg%26hvqmt%3Db%26hvrand%3D1229409057575211266%26hvtargid%3Dkwd-314793657586%26hydadcr%3D24565_1971419%26tag%3Dgooginhydr1-21%26ref%3Dnav_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=inflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&';
+    }
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => CustomBrowser(url, keyword)));
   }
 
   Widget _buildRow(String label, double confidence) {
@@ -239,8 +243,8 @@ class LabelImageWidgetState extends State<LabelImageWidget> {
                 style: new TextStyle(
                     fontSize: 17.0, color: Colors.white, fontFamily: 'Gilroy')),
             onPressed: () {
-              _launchUrl(url +
-                  '/s?k=${_queryController.text + ' ' + labels[0].label.toLowerCase() + ' ' + (labels.length > 1 ? labels[1].label.toLowerCase() : '')}');
+              _launchUrl(
+                  '${_queryController.text + '+' + labels[0].label.toLowerCase() + '+' + (labels.length > 1 ? labels[1].label.toLowerCase() : '')}');
             }),
         SizedBox(height: 15)
       ],

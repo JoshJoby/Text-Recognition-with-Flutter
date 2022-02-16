@@ -20,8 +20,8 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
   var _image;
   var imagePicker;
   var type;
-  XFile image;
-  String image_path;
+  late XFile image;
+  late String image_path;
 
   ImageFromGalleryExState(this.type);
 
@@ -153,9 +153,6 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                                             labels: labels,
                                           )));
                                 });
-
-                                // print(
-                                //     'this is confidence ${labels[0].confidence}');
                               }
                             },
                             padding: EdgeInsets.only(

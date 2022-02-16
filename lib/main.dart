@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/label_detect.dart';
+import 'package:flutter_application_1/navigation_drawer.dart';
 import 'package:flutter_application_1/select_image.dart';
 import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mlkit/mlkit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,9 +18,10 @@ Future<void> main() async {
 
 class SplashPage extends StatelessWidget {
   static int numOfVisits = 0;
+  static bool isLoggedIn = false;
   int duration = 0;
   Widget goToPage;
-  SplashPage({this.goToPage, this.duration});
+  SplashPage({required this.goToPage, required this.duration});
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +95,7 @@ class HomePage extends StatelessWidget {
                   MaterialButton(
                     color: Color(0xFF6305dc),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          80.0), // CHANGE BORDER RADIUS HERE
+                      borderRadius: BorderRadius.circular(80.0),
                       side: BorderSide(width: 5, color: Color(0xFF212121)),
                     ),
                     padding: EdgeInsets.only(
@@ -154,6 +154,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ),
+        drawer: SideDrawer(),
         appBar: AppBar(
             title:
                 Text("Image Picker ", style: TextStyle(fontFamily: 'Gilroy')),
@@ -242,6 +243,6 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ).then((value) => value ?? false);
   }
 }
