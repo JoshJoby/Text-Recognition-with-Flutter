@@ -9,6 +9,8 @@ import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mlkit/mlkit.dart';
 
+import 'customBrowser.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
@@ -180,7 +182,7 @@ class HomePage extends StatelessWidget {
             style: new TextStyle(
                 color: Colors.white, fontSize: 22.0, fontFamily: 'Gilroy')),
         content: new Text(
-          'Are you sure you want to exit app?',
+          'Are you sure you want to exit the app?',
           style: TextStyle(
               color: Colors.white, fontSize: 18.0, fontFamily: 'Gilroy'),
         ),
@@ -188,56 +190,39 @@ class HomePage extends StatelessWidget {
           Center(
             child: Column(
               children: [
+                (SplashPage.isLoggedIn)
+                    ? new MaterialButton(
+                        color: Color(0xFF212121),
+                        onPressed: () {
+                          SplashPage.isLoggedIn = false;
+                          String url =
+                              'https://www.amazon.in/gp/flex/sign-out.html?path=%2Fgp%2Fyourstore%2Fhome&signIn=1&useRedirectOnSuccess=1&action=sign-out&ref_=nav_AccountFlyout_signout';
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CustomBrowser(url, ' ')));
+                        },
+                        child: new Text('Logout from Amazon',
+                            style: new TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.0,
+                                fontFamily: 'Gilroy')),
+                      )
+                    : Divider(),
                 new MaterialButton(
-                  color: Colors.black,
-                  onPressed: () {
-                    SplashPage.numOfVisits--;
-                    FlutterWebBrowser.openWebPage(
-                      url:
-                          'https://www.amazon.in/gp/flex/sign-out.html?path=%2Fgp%2Fyourstore%2Fhome&signIn=1&useRedirectOnSuccess=1&action=sign-out&ref_=nav_AccountFlyout_signout',
-                      customTabsOptions: CustomTabsOptions(
-                        colorScheme: CustomTabsColorScheme.dark,
-                        darkColorSchemeParams: CustomTabsColorSchemeParams(
-                          toolbarColor: Colors.purple,
-                          secondaryToolbarColor: Colors.green,
-                          navigationBarDividerColor: Colors.cyan,
-                        ),
-                        shareState: CustomTabsShareState.on,
-                        instantAppsEnabled: true,
-                        showTitle: true,
-                        urlBarHidingEnabled: true,
-                      ),
-                    );
-                  },
-                  child: new Text('Logout from Amazon',
-                      style: new TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontFamily: 'Gilroy')),
-                ),
-                new MaterialButton(
-                  color: Colors.black,
+                  color: Color(0xFF212121),
                   onPressed: () {
                     // this line exits the app.
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
-                  child: new Text('Exit anyway',
+                  child: new Text(
+                      (SplashPage.isLoggedIn) ? 'Exit anyway' : 'Yes',
                       style: new TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
                           fontFamily: 'Gilroy')),
                 ),
-                // new MaterialButton(
-                //   color: Colors.black,
-
-                //   onPressed: () =>
-                //       Navigator.pop(context), // this line dismisses the dialog
-                //   child: new Text('Stay on App',
-                //       style: new TextStyle(
-                //           color: Colors.white,
-                //           fontSize: 16.0,
-                //           fontFamily: 'Gilroy')),
-                // )
               ],
             ),
           ),
@@ -245,4 +230,80 @@ class HomePage extends StatelessWidget {
       ),
     ).then((value) => value ?? false);
   }
+
+//   Future<bool> onWillPop(context) {
+//     return showDialog(
+//       context: context,
+//       builder: (context) => new AlertDialog(
+//         backgroundColor: Color(0xFF6305dc),
+//         title: new Text('Confirm Exit?',
+//             style: new TextStyle(
+//                 color: Colors.white, fontSize: 22.0, fontFamily: 'Gilroy')),
+//         content: new Text(
+//           'Are you sure you want to exit app?',
+//           style: TextStyle(
+//               color: Colors.white, fontSize: 18.0, fontFamily: 'Gilroy'),
+//         ),
+//         actions: <Widget>[
+//           Center(
+//             child: Column(
+//               children: [
+//                 new MaterialButton(
+//                   color: Colors.black,
+//                   onPressed: () {
+//                     SplashPage.numOfVisits--;
+//                     FlutterWebBrowser.openWebPage(
+//                       url:
+//                           'https://www.amazon.in/gp/flex/sign-out.html?path=%2Fgp%2Fyourstore%2Fhome&signIn=1&useRedirectOnSuccess=1&action=sign-out&ref_=nav_AccountFlyout_signout',
+//                       customTabsOptions: CustomTabsOptions(
+//                         colorScheme: CustomTabsColorScheme.dark,
+//                         darkColorSchemeParams: CustomTabsColorSchemeParams(
+//                           toolbarColor: Colors.purple,
+//                           secondaryToolbarColor: Colors.green,
+//                           navigationBarDividerColor: Colors.cyan,
+//                         ),
+//                         shareState: CustomTabsShareState.on,
+//                         instantAppsEnabled: true,
+//                         showTitle: true,
+//                         urlBarHidingEnabled: true,
+//                       ),
+//                     );
+//                   },
+//                   child: new Text('Logout from Amazon',
+//                       style: new TextStyle(
+//                           color: Colors.white,
+//                           fontSize: 16.0,
+//                           fontFamily: 'Gilroy')),
+//                 ),
+//                 new MaterialButton(
+//                   color: Colors.black,
+//                   onPressed: () {
+//                     // this line exits the app.
+//                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+//                   },
+//                   child: new Text('Exit anyway',
+//                       style: new TextStyle(
+//                           color: Colors.white,
+//                           fontSize: 16.0,
+//                           fontFamily: 'Gilroy')),
+//                 ),
+//                 // new MaterialButton(
+//                 //   color: Colors.black,
+
+//                 //   onPressed: () =>
+//                 //       Navigator.pop(context), // this line dismisses the dialog
+//                 //   child: new Text('Stay on App',
+//                 //       style: new TextStyle(
+//                 //           color: Colors.white,
+//                 //           fontSize: 16.0,
+//                 //           fontFamily: 'Gilroy')),
+//                 // )
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     ).then((value) => value ?? false);
+//   }
+// }
 }

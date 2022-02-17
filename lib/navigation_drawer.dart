@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'addDescription.dart';
 import 'customBrowser.dart';
 import 'main.dart';
 
@@ -57,7 +58,10 @@ class SideDrawer extends StatelessWidget {
               title: Text('Details',
                   style: TextStyle(
                       color: Colors.white, fontSize: 18, fontFamily: 'Gilroy')),
-              onTap: () => {Navigator.of(context).pop()},
+              onTap: () => {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => appDesc()))
+              },
             ),
             Divider(color: Colors.white70),
             Spacer(),

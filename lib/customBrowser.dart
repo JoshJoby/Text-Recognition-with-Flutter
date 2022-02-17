@@ -117,6 +117,15 @@ class _MyAppState extends State<CustomBrowser> {
                     urlController.text = this.url;
                     var splitList;
                     print(query);
+                    if (SplashPage.isLoggedIn == true &&
+                        this.url ==
+                            "https://www.amazon.in/ap/signin?openid.pape.max_auth_age=900&openid.return_to=https%3A%2F%2Fwww.amazon.in%2Fgp%2Fhomepage.html%3F_encoding%3DUTF8%26ref_%3Dnavm_accountmenu_re_signout%3Fpath%3D%252Fgp%252Fhomepage.html%253F_encoding%253DUTF8%2526ref_%253Dnavm_accountmenu_re_signout%26useRedirectOnSuccess%3D1%26signIn%3D1%26action%3Dsign-out%26ref_%3Dnavm_accountmenu_signout&openid.assoc_handle=inflex&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0") {
+                      SplashPage.isLoggedIn = false;
+                      print("Success2");
+                    } else {
+                      print("Fail3");
+                      print(this.url);
+                    }
                     var newQuery = "";
                     if (query.contains("+")) {
                       splitList = query.split('+');
