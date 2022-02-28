@@ -7,6 +7,7 @@ import 'package:mlkit/mlkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
+import 'textDetect.dart';
 
 class ImageFromGalleryEx extends StatefulWidget {
   final type;
@@ -21,7 +22,7 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
   var imagePicker;
   var type;
   late XFile image;
-  late String image_path;
+  late var image_path = null;
 
   ImageFromGalleryExState(this.type);
 
@@ -146,11 +147,29 @@ class ImageFromGalleryExState extends State<ImageFromGalleryEx> {
                               _showToast(context, image_path);
                               if (image_path != null) {
                                 Future.delayed(Duration(milliseconds: 1500),
-                                    () {
+                                    () async {
+                                  // var labels1 =
+                                  //     labels + DetailScreen(image_path);
+                                  print(
+                                      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                                  // print(DetailScreen(image_path)
+                                  //     .initializeVision());
+                                  DetailScreen detailScreen =
+                                      new DetailScreen(image_path);
+                                  var labels1 =
+                                      await detailScreen.initializeVision();
+                                  // print(
+                                  //     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+                                  // print(labels1.length);
+                                  // for (final i in labels1) print(i);
+
+                                  // print(labels);
+                                  // print(labels1);
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (_) => LabelImageWidget(
                                             image_path: image_path,
                                             labels: labels,
+                                            textLabels: labels1,
                                           )));
                                 });
                               }
